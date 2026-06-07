@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk21'
+        maven 'maven'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/huzaifa1221/Onboarding-Tasks.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                sh 'eval $(minikube docker-env)'
+                sh 'docker build -t springboot-app:v1 .'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'kubectl config use-context minikube'
+                sh 'kubectl apply -f k8s.yml'
+            }
+        }
+    }
+}
