@@ -8,12 +8,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/huzaifa1221/Onboarding-Tasks.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 sh 'mvn clean package'
