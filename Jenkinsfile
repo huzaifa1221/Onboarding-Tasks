@@ -23,8 +23,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'kubectl config use-context minikube'
-                sh 'kubectl apply -f k8s.yml'
+                sh '''
+                    kubectl config use-context minikube
+                    kubectl set image deployment/hello-world \
+                        hello-world=hello-world:${BUILD_NUMBER}
+                    kubectl rollout status deployment/hello-world
+                '''
             }
         }
     }
