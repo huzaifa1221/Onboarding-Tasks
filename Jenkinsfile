@@ -16,8 +16,8 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh 'eval $(minikube docker-env)'
                 sh 'docker build -t hello-world:${BUILD_NUMBER} .'
+                sh 'minikube image load hello-world:${BUILD_NUMBER}'
             }
         }
 
