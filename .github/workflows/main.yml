@@ -5,9 +5,6 @@ on:
     branches:
       - main
 
-env:
-  IMAGE_NAME: springboot-app
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,16 +19,16 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install dependencies
-        run: mvn dependency:go-offline
+      # - name: Install dependencies
+      #   run: mvn dependency:go-offline
 
-      - name: Run Tests
-        run: mvn test
-
-      - name: Build Application
+      - name: Build
         run: mvn clean package -DskipTests
 
-      - name: Upload JAR Artifact
+      - name: Tests
+        run: mvn test
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: helloWorld-jar
