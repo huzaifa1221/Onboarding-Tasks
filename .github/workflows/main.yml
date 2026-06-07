@@ -19,9 +19,6 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # - name: Install dependencies
-      #   run: mvn dependency:go-offline
-
       - name: Build
         run: mvn clean package -DskipTests
 
@@ -44,11 +41,12 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker config use-context docker-desktop
+          eval $(minikube docker-env -u)
           docker build -t hello-world:${{ github.sha }} .
 
       - name: Update Deployment Image
         run: |
+          docker config use-context docker-desktop
           kubectl set image deployment/hello-world \
             hello-world=hello-world:${{ github.sha }}
 
