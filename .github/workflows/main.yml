@@ -1,0 +1,59 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: springboot-app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install dependencies
+        run: mvn dependency:go-offline
+        # uses: actions/cache@v4
+        # with:
+        #   path: ~/.m2/repository
+        #   key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+        #   restore-keys: |
+        #     maven-${{ runner.os }}-
+
+      - name: Run Tests
+        run: mvn test
+
+      - name: Build Application
+        run: mvn clean package -DskipTests
+
+      - name: Upload JAR Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: helloWorld-jar
+          path: target/*.jar
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build -t helloWorld .
+
+      - name: Update Deployment Image
+        run: kubectl apply -f k8s.yml
