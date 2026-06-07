@@ -46,7 +46,7 @@ jobs:
 
       - name: Update Deployment Image
         run: |
-          docker config use-context docker-desktop
+          kubectl config use-context docker-desktop
           kubectl set image deployment/hello-world \
             hello-world=hello-world:${{ github.sha }}
 
