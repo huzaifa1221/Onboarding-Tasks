@@ -24,12 +24,6 @@ jobs:
 
       - name: Install dependencies
         run: mvn dependency:go-offline
-        # uses: actions/cache@v4
-        # with:
-        #   path: ~/.m2/repository
-        #   key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-        #   restore-keys: |
-        #     maven-${{ runner.os }}-
 
       - name: Run Tests
         run: mvn test
@@ -53,7 +47,13 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t hello-world .
+          docker build -t hello-world:${{ github.sha }} .
 
-      - name: Update Deployment Image
-        run: kubectl apply -f k8s.yml
+      - name: Update Deployment Image hello-world-app
+        run: |
+          kubectl set image deployment/hello-world \
+            hello-world=hello-world:${{ github.sha }}
+
+      - name: Wait For Rollout
+        run: |
+          kubectl rollout status deployment/springboot-app -n default
