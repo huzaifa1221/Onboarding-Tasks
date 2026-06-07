@@ -17,7 +17,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh 'eval $(minikube docker-env)'
-                sh 'docker build -t springboot-app:v1 .'
+                sh 'docker build -t hello-world:${BUILD_NUMBER} .'
             }
         }
 
